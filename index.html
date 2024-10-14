@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="cerebro.png" type="image/x-icon">
+    <title>Juego de memoria</title>
+    <style>
+        *{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            background-color: rgb(43, 114, 55);
+            overflow: hidden;
+            font-family: system-ui;
+        }
+        .container{
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .board-container{
+            padding: 30px 40px;
+            background-color: rgb(71, 196, 92);
+            border-radius: 7px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        h1{
+            font-size: 36px;
+            color: wheat;
+            text-align: center;
+            font-weight: 800;
+        }
+        .board{
+            display: grid;
+            grid-template-columns: repeat(4, auto);
+            gap: 20px;
+        }
+        .information{
+            display: flex;
+            gap: 32px;
+            color: white;
+            font-size: 20px;
+        }
+
+        .emoji-box{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 75px;
+            height: 75px;
+            background-color: white;
+            font-size: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transform: rotateY(180deg);
+            transition: all 0.30s;
+            position: relative;
+            box-shadow: 0 4px 10px rgb(0, 0, 0, 0.7);
+        }
+        .box-open{
+            transform: rotateY(0deg);
+        }
+        .emoji-box::after{
+            content: '';
+            border-radius: 5px;
+            inset: 0;
+            position: absolute;
+            transform: rotateY(0deg);
+            backface-visibility: hidden;
+            background-color: rgb(71, 255, 102);
+        }
+        .box-open::after,
+        .box-true::after{
+            transform: rotateY(180deg);
+        }
+    </style>
+    <script type="module">
+        const board = document.querySelector('.board')
+        const numberMoves = document.querySelector('.moves')
+        const currentTime = document.querySelector('.time')
+        let temporizador = false
+        let time = 0
+        let tiempo;
+        let moves = 0
+        const emojis = ['😀', '😀', '😁', '😁', '😆', '😆', '❣️', '❣️', 
+            '🥰', '🥰', '🤪', '🤪', '😴', '😴', '😳', '😳'
+        ]
+        const emojisRandom = emojis.sort(() => (Math.random() - .5 ))
+        function timeGame() {
+            tiempo = setInterval(() =>{
+                time++
+                currentTime.textContent =  `Tiempo: ${time} segundos`
+            }, 1000) 
+        }
+
+        function game() {
+            for (let i = 0; i < emojis.length; i++) {
+            const emojiBox = document.createElement('div')
+            emojiBox.classList = 'emoji-box'
+            emojiBox.textContent = emojisRandom[i]
+            emojiBox.addEventListener('click', () =>{
+                if (temporizador == false) {
+                    timeGame()
+                    temporizador = true
+                }
+               emojiBox.classList.add('box-open')
+               let boxOpen = document.querySelectorAll('.box-open')
+               setTimeout(() =>{
+                if (boxOpen.length > 1) {
+                    const box1 = boxOpen[0]
+                    const box2 = boxOpen[1]
+
+                    if (box1.textContent == box2.textContent) {
+                        box1.classList.add('box-true')
+                        box2.classList.add('box-true')
+                        box1.classList.remove('box-open')
+                        box2.classList.remove('box-open')
+                        moves++
+                        numberMoves.textContent = `Movimientos: ${moves}`
+                        if (document.querySelectorAll('.box-true').length == emojis.length) {
+                            alert(`Has ganado, tu tiempo fué de ${time} segundos`)
+                            clearInterval(tiempo)
+                            time = 0
+                        }
+                    } else {
+                        box1.classList.remove('box-open')
+                        box2.classList.remove('box-open')
+                    }
+                }
+               }, 500)
+               
+            })
+            board.appendChild(emojiBox)
+            }
+        }
+        game()
+    </script>
+</head>
+<body>
+    <main class="container">
+        <div class="board-container">
+            <h1>Juego de memoria</h1>
+            <div class="information">
+                <span class="moves">Movimientos: 0</span>
+                <span class="time">Tiempo: 0 segundos</span>
+            </div>
+            <div class="board"></div>
+        </div>
+    </main>
+</body>
+</html><
